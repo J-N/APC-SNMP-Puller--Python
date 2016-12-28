@@ -145,6 +145,30 @@ def get_outlet_status(ip_address, query_id):
 	except subprocess.CalledProcessError as e:
 		return "Error"
 
+def get_metered_outlet_status(ip_address, query_id, outlet):
+	on_outlets = []
+	off_outlets = []
+
+	try:
+		file = open("outputs/" + query_id + ".html",'a')
+		file.write("<p></p>")
+		file.write("<u><b>Power:</u></b> ")
+		file.close()
+
+		outlet_power = str(subprocess.check_output("snmpget -v1 -Cf -c " + CONST_COMMUNITY_STRING + " " + ip_address + " rPDU2OutletMeteredStatusPower." + str(outlet),shell=True))
+		outlet_power = outlet_power.split("INTEGER: ",1)
+		outlet_power = outlet_power[1]
+		
+		
+		file = open("outputs/" + query_id + ".html",'a')
+		file.write(outlet_power)
+		file.write('<p>-</p>')
+		file.close()
+		
+	except subprocess.CalledProcessError as e:
+		return "Error"
+
+
 def ip_extractor(ip_range, octet_list):
 	split_ip = ip_range.split("-")
 	

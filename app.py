@@ -1,5 +1,6 @@
 #Purpose: Pull SNMP info from APC devices
 #Author: Andrew Cozzetta
+#Extended by John-Nicholas Furst -- Akamai Technologies
 
 from flask import Flask, render_template
 import os
@@ -24,6 +25,9 @@ def main(ip_address, query_id):
 		GrabNParseFuncs.get_bank_load(ip_address, query_id)
 		GrabNParseFuncs.get_outlet_status(ip_address, query_id)
 
+def meteredOutletStatus(ip_address, query_id, outlet):
+	GrabNParseFuncs.get_metered_outlet_status(ip_address, query_id, outlet)
+
 
 @app.route("/")
 def test():
@@ -39,6 +43,19 @@ def run_me(ip_address):
 		return render_template("invalid_ip_range.html")
 
 	main(ip_address, query_id)
+	final_out = open("outputs/" + query_id + ".html", 'r').read()
+	return final_out
+	final_out.close()
+
+@app.route("/dev/<ip_address>/<outlet>", methods=['GET'])
+def metered_outlet(ip_address, outlet):
+	query_id = str(uuid.uuid1())
+	Path("outputs/" + query_id + ".html").touch()
+
+	if len(ip_address) > 15 or len(ip_address) < 7:
+		return render_template("invalid_ip_range.html")
+
+	meteredOutletStatus(ip_address, query_id, outlet)
 	final_out = open("outputs/" + query_id + ".html", 'r').read()
 	return final_out
 	final_out.close()
