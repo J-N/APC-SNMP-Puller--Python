@@ -146,8 +146,6 @@ def get_outlet_status(ip_address, query_id):
 		return "Error"
 
 def get_metered_outlet_status(ip_address, query_id, outlet):
-	on_outlets = []
-	off_outlets = []
 
 	try:
 		file = open("outputs/" + query_id + ".html",'a')
